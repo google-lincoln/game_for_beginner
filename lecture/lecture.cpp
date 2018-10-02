@@ -47,7 +47,7 @@ void goodbye()
 	cleardevice();
 	setcolor(YELLOW);
 	setfont(48,0,"黑体");
-	outtextxy(104,180,"多写程序  熟能生巧");
+	outtextxy(104,180,"再接再厉,加油！ ");
 	getch();
 
 }
@@ -69,30 +69,99 @@ int main(int argc, char* argv[])
 	char target;						//目标字母
 	char key;							//用户的按键
 	int x,y;							//字母的位置
+	int totalBeat=0;					//击落字母数量
+	int totalLoss=0;					//漏接字母数量
 
 	//主循环
 	while(true)
 	{
 		target = 65 + rand() % 26;
 		x = rand() %620;
+		char strWin[80];
+		char strLoss[80];
+		sprintf(strWin, "击落数量 = %d", totalBeat);
+		outtextxy(204,10,strWin);
+		
+		sprintf(strLoss, "漏接数量 =%d", totalLoss);
+		outtextxy(350,10,strLoss);
 
-		for (y=0; y<460; y++)
+		for (y=15; y<460; y++)
 		{
 			setcolor(WHITE);
-			Sleep(10);
+			Sleep(10);				//slow down the velocity of drop down and see the changes
 			outtextxy(x,y,target);
+
+			//以下是判断按键输入的部分
+			if(kbhit())
+			{
+				key = getch();		//获取按键输入
+
+				if((key == target) || (key == target +32))
+				{
+					//按键正确,"击落"字母
+					//outtextxy(x,y,"击落");
+					bar(x,y,x+16,y+16);	
+					totalBeat++;
+					
+					outtextxy(204,10,strWin);
+
+					break;			
+					
+				}else if(key == 27){//退出
+				
+				
+				}else{ //击落与漏接
+						if(y==459)
+						{
+							totalLoss++;
+							sprintf(strLoss, "漏接数量 =%d", totalLoss);
+							outtextxy(350,10,strLoss);
+							if(totalLoss==3)
+							{
+								goto EXIT;
+							}
+						
+						}
+				}
+				
+			}else{//没有按键的情况
+				if(y==459)
+				{
+					totalLoss++;
+					sprintf(strLoss, "漏接数量 =%d", totalLoss);
+					outtextxy(350,10,strLoss);
+					if(totalLoss==3)
+					{
+						goto EXIT;
+					}
+				}
+						  
+			
+			}
 
 		
 		}
 
 		//延时,并清除字母
 		Sleep(100);
-		bar(x,y,x+16,y+16);
+		//setfillstyle(BLACK);
+		//setcolor(BLACK);
+		setfillcolor(BLACK);	//setfillcolor and bar will make character disappear
+		bar(x,y,x+16,y+16);		//comment out see the last moment of drop character
+		//fillrectangle(x,y,x+16,y+16);
+		//rectangle(x,y,x+16,y+16);
 
 	
 	}
 
-	printf("Hello World!\n");
+EXIT:
+	//退出部分
+	goodbye();
+
+	//关闭图形界面
+	closegraph();
+
+
 	return 0;
 }
 
